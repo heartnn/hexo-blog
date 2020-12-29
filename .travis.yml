@@ -1,0 +1,36 @@
+language: node_js
+
+node_js: lts/*
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
+before_install:
+  - yarn global add hexo-cli
+
+install:
+  - yarn
+
+script:
+  - hexo clean # 清除
+  - hexo g # 生成
+
+after_script:
+  - cd ./public
+  - echo 'y.heartnn.com' > CNAME
+  - git init
+  - git config user.name "${GH_USERNAME}"
+  - git config user.email "${GH_EMAIL}"
+  - git add .
+  - git commit -m "Travis CI Auto Builder"
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages
+
+branches:
+  only:
+    - master
+
+env:
+  global:
+    - GH_REF: github.com/heartnn/y.heartnn.com.git
